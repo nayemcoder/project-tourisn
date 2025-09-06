@@ -3,25 +3,38 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
+    "dev": "cross-env NEXT_PUBLIC_SUPABASE_URL=https://zfzmrykzakgzkmgbicem.supabase.co NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpmem1yeWt6YWtnemttZ2JpY2VtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY5NzU0OTcsImV4cCI6MjA3MjU1MTQ5N30.IdqG4WNUDbJ-grnpyEMS2NFwYGGm3LxfRYTzgr8Flhk next dev",
+    "build": "cross-env NEXT_PUBLIC_SUPABASE_URL=https://zfzmrykzakgzkmgbicem.supabase.co NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpmem1yeWt6YWtnemttZ2JpY2VtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY5NzU0OTcsImV4cCI6MjA3MjU1MTQ5N30.IdqG4WNUDbJ-grnpyEMS2NFwYGGm3LxfRYTzgr8Flhk next build",
+    "start": "cross-env NEXT_PUBLIC_SUPABASE_URL=https://zfzmrykzakgzkmgbicem.supabase.co NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpmem1yeWt6YWtnemttZ2JpY2VtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY5NzU0OTcsImV4cCI6MjA3MjU1MTQ5N30.IdqG4WNUDbJ-grnpyEMS2NFwYGGm3LxfRYTzgr8Flhk next start",
     "lint": "eslint"
   },
   "dependencies": {
+    "@supabase/auth-helpers-nextjs": "^0.10.0",
+    "@supabase/auth-helpers-react": "^0.5.0",
+    "@supabase/supabase-js": "^2.57.0",
+    "bcryptjs": "^3.0.2",
+    "next": "^15.5.2",
     "react": "19.1.0",
-    "react-dom": "19.1.0",
-    "next": "15.5.2"
+    "react-dom": "^19.1.0"
   },
   "devDependencies": {
-    "typescript": "^5",
+    "@eslint/eslintrc": "^3",
+    "@tailwindcss/cli": "^4.1.13",
+    "@tailwindcss/postcss": "^4.1.13",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "@tailwindcss/postcss": "^4",
-    "tailwindcss": "^4",
+    "autoprefixer": "^10.4.21",
+    "cross-env": "^10.0.0",
     "eslint": "^9",
     "eslint-config-next": "15.5.2",
-    "@eslint/eslintrc": "^3"
-  }
+    "postcss": "^8.5.6",
+    "tailwindcss": "^4.1.13",
+    "typescript": "^5"
+  },
+  "description": "This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).",
+  "main": "index.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
 }
