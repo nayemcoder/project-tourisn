@@ -1,4 +1,3 @@
-// src/app/layout.tsx
 'use client';
 
 import React, { useState, useEffect, ReactNode } from 'react';
@@ -41,12 +40,17 @@ function RoleBasedLayout({ children }: { children: ReactNode }) {
       return;
     }
     (async () => {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('profiles')
         .select('role')
         .eq('id', user.id)
         .single<{ role: string }>();
-      if (data?.role) setRole(data.role);
+
+      if (error) {
+        console.error('Error fetching role:', error);
+      } else if (data?.role) {
+        setRole(data.role);
+      }
     })();
   }, [user, supabase]);
 
@@ -55,7 +59,6 @@ function RoleBasedLayout({ children }: { children: ReactNode }) {
     window.location.href = '/';
   };
 
-  // Service navigation (visible to everyone)
   const serviceNav = [
     { label: 'Flights', href: '/', icon: '✈️' },
     { label: 'Hotel', href: '/hotel', icon: '🏨' },
@@ -64,7 +67,6 @@ function RoleBasedLayout({ children }: { children: ReactNode }) {
     { label: 'T-Card', href: '/gift-card', icon: '🎁' },
   ];
 
-  // Auth / role-based nav
   const authNav: { label: string; href?: string; onClick?: () => void }[] = !user
     ? [
         { label: 'Sign In', href: '/auth/signin' },
@@ -83,49 +85,33 @@ function RoleBasedLayout({ children }: { children: ReactNode }) {
         { label: 'Sign Out', onClick: handleSignOut },
       ];
 
-  // Show hero and service nav for everyone
-  const showHeroBg = true;
-  const showServiceNav = true;
-
   return (
     <div className="flex flex-col min-h-screen">
       {/* HEADER */}
       <header className="relative z-50 bg-white shadow-sm">
-        <div
-          className={`container mx-auto px-4 py-3 ${
-            showServiceNav
-              ? 'grid grid-cols-3 items-center'
-              : 'flex items-center justify-between'
-          }`}
-        >
+        <div className="container mx-auto px-4 py-3 grid grid-cols-3 items-center">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2">
             <span className="text-2xl font-bold text-blue-900">Tourisn</span>
           </Link>
 
-          {/* Centered Service Nav (visible to everyone) */}
-          {showServiceNav && (
-            <nav className="hidden md:flex justify-center space-x-6 text-blue-900 font-medium">
-              {serviceNav.map((item) => (
-                <Link
-                  key={item.label}
-                  href={item.href}
-                  className="flex items-center space-x-1 hover:text-blue-500 transition"
-                >
-                  <span>{item.icon}</span>
-                  <span>{item.label}</span>
-                </Link>
-              ))}
-            </nav>
-          )}
+          {/* Centered Service Nav */}
+          <nav className="hidden md:flex justify-center space-x-6 text-blue-900 font-medium">
+            {serviceNav.map(item => (
+              <Link
+                key={item.label}
+                href={item.href}
+                className="flex items-center space-x-1 hover:text-blue-500 transition"
+              >
+                <span>{item.icon}</span>
+                <span>{item.label}</span>
+              </Link>
+            ))}
+          </nav>
 
-          {/* Right-side Auth/Role Nav */}
-          <div
-            className={`hidden md:flex space-x-6 text-blue-900 font-medium ${
-              showServiceNav ? 'justify-end' : ''
-            }`}
-          >
-            {authNav.map((item) =>
+          {/* Right‑side Auth/Role Nav */}
+          <div className="hidden md:flex justify-end space-x-6 text-blue-900 font-medium">
+            {authNav.map(item =>
               item.onClick ? (
                 <button
                   key={item.label}
@@ -149,7 +135,7 @@ function RoleBasedLayout({ children }: { children: ReactNode }) {
           {/* Mobile Toggle */}
           <button
             className="md:hidden text-gray-700 justify-self-end"
-            onClick={() => setMobileMenuOpen((open) => !open)}
+            onClick={() => setMobileMenuOpen(open => !open)}
             aria-label="Toggle menu"
           >
             {mobileMenuOpen ? '✕' : '☰'}
@@ -160,7 +146,7 @@ function RoleBasedLayout({ children }: { children: ReactNode }) {
         {mobileMenuOpen && (
           <nav className="md:hidden bg-white border-t text-blue-900 font-medium">
             <ul className="px-4 py-3 space-y-3">
-              {serviceNav.map((item) => (
+              {serviceNav.map(item => (
                 <li key={item.label}>
                   <Link
                     href={item.href}
@@ -172,7 +158,7 @@ function RoleBasedLayout({ children }: { children: ReactNode }) {
                   </Link>
                 </li>
               ))}
-              {authNav.map((item) => (
+              {authNav.map(item => (
                 <li key={item.label}>
                   {item.onClick ? (
                     <button
@@ -200,69 +186,58 @@ function RoleBasedLayout({ children }: { children: ReactNode }) {
         )}
       </header>
 
-      {/* MAIN CONTENT with hero background (no gap before footer) */}
-      {showHeroBg ? (
-        <section className="relative flex-grow flex flex-col m-0 p-0">
-          <Image
-            src="/images/cox.webp"
-            alt="Scenic background"
-            fill
-            className="object-cover -z-10"
-            priority
-          />
-          <div className="absolute inset-0 bg-black/40 -z-10" />
-          <div className="relative container mx-auto px-4 py-8 bg-white/10 rounded-lg flex-grow">
-            {children}
-          </div>
-        </section>
-      ) : (
-        <main className="flex-grow container mx-auto px-4 py-8 bg-white">
+      {/* MAIN CONTENT with hero background */}
+      <section className="relative flex-grow flex flex-col m-0 p-0">
+        <Image
+          src="/images/cox.webp"
+          alt="Scenic background"
+          fill
+          className="object-cover -z-10"
+          priority
+        />
+        <div className="absolute inset-0 bg-black/40 -z-10" />
+        <div className="relative container mx-auto px-4 py-8 bg-white/10 rounded-lg flex-grow">
           {children}
-        </main>
-      )}
+        </div>
+      </section>
 
-      {/* FOOTER (right section at bottom on mobile, dark blue, white text) */}
+      {/* FOOTER */}
       <footer className="bg-blue-900 text-white border-t m-0">
-        <div className="container mx-auto px-4 py-12">
-          <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-10">
-            {/* Left: Why Choose Tourisn (top on mobile) */}
-            <div className="order-1 md:order-none">
-              <h3 className="font-semibold text-lg mb-3">Why Choose Tourisn?</h3>
-              <ul className="space-y-2">
-                <li>
-                  <Link href="/tours" className="hover:underline">
-                    Easy Booking
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/auth/signup?role=local_guide" className="hover:underline">
-                    Become a Guide
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/auth/signup?role=business_owner" className="hover:underline">
-                    Grow Your Business
-                  </Link>
-                </li>
-              </ul>
-            </div>
-
-            {/* Right: Existing links block (pinned to bottom on mobile) */}
-            <div className="order-2 md:order-none">
-              <p className="mb-4">
-                &copy; {new Date().getFullYear()} Tourisn. All rights reserved.
-              </p>
-              <div className="flex space-x-6">
-                <Link href="/about" className="hover:underline">
-                  About
+        <div className="container mx-auto px-4 py-12 flex flex-col md:flex-row md:justify-between gap-10">
+          <div>
+            <h3 className="font-semibold text-lg mb-3">Why Choose Tourisn?</h3>
+            <ul className="space-y-2">
+              <li>
+                <Link href="/tours" className="hover:underline">
+                  Easy Booking
                 </Link>
-                <Link href="/contact" className="hover:underline">
-                  Contact
+              </li>
+              <li>
+                <Link href="/auth/signup?role=local_guide" className="hover:underline">
+                  Become a Guide
                 </Link>
-                <Link href="/terms" className="hover:underline">
-                  Terms
+              </li>
+              <li>
+                <Link href="/auth/signup?role=business_owner" className="hover:underline">
+                  Grow Your Business
                 </Link>
-              </div>
+              </li>
+            </ul>
+          </div>
+          <div>
+            <p className="mb-4">
+              &copy; {new Date().getFullYear()} Tourisn. All rights reserved.
+            </p>
+            <div className="flex space-x-6">
+              <Link href="/about" className="hover:underline">
+                About
+              </Link>
+              <Link href="/contact" className="hover:underline">
+                Contact
+              </Link>
+              <Link href="/terms" className="hover:underline">
+                Terms
+              </Link>
             </div>
           </div>
         </div>

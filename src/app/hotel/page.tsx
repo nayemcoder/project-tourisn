@@ -1,24 +1,27 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
+
+type FilterOption = 'Business' | 'Couples' | 'Families' | 'Friends' | 'Solo';
 
 export default function HotelPage() {
-  const [location, setLocation] = useState('Cox’s Bazar, Bangladesh');
+  const [location, setLocation] = useState("Cox's Bazar, Bangladesh");
   const [checkIn, setCheckIn] = useState('2025-09-11');
   const [checkOut, setCheckOut] = useState('2025-09-12');
-  const [rooms, setRooms] = useState(1);
-  const [guests, setGuests] = useState(2);
-  const [filters, setFilters] = useState<string[]>([]);
+  const [rooms] = useState(1);
+  const [guests] = useState(2);
+  const [filters, setFilters] = useState<FilterOption[]>([]);
 
   const today = new Date().toISOString().split('T')[0];
 
-  const toggleFilter = (filter: string) => {
-    setFilters((prev) =>
-      prev.includes(filter) ? prev.filter((f) => f !== filter) : [...prev, filter]
+  const toggleFilter = (filter: FilterOption) => {
+    setFilters(prev =>
+      prev.includes(filter) ? prev.filter(f => f !== filter) : [...prev, filter]
     );
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log({ location, checkIn, checkOut, rooms, guests, filters });
   };
@@ -33,42 +36,52 @@ export default function HotelPage() {
         >
           {/* Location */}
           <div>
-            <label className="block text-sm font-medium text-gray-600">
+            <label htmlFor="location" className="block text-sm font-medium text-gray-600">
               CITY / HOTEL / RESORT / AREA
             </label>
             <input
+              id="location"
               type="text"
               value={location}
-              onChange={(e) => setLocation(e.target.value)}
-              className="w-full border border-gray-300 px-3 py-2 rounded-md text-gray-900 placeholder-gray-500"
+              onChange={e => setLocation(e.target.value)}
+              className="w-full border border-gray-300 px-3 py-2 rounded-md text-gray-900"
             />
           </div>
 
           {/* Dates & Guests */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-600">CHECK-IN</label>
+              <label htmlFor="checkIn" className="block text-sm font-medium text-gray-600">
+                CHECK-IN
+              </label>
               <input
+                id="checkIn"
                 type="date"
                 value={checkIn}
                 min={today}
-                onChange={(e) => setCheckIn(e.target.value)}
+                onChange={e => setCheckIn(e.target.value)}
                 className="w-full border border-gray-300 px-3 py-2 rounded-md text-gray-900"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-600">CHECK-OUT</label>
+              <label htmlFor="checkOut" className="block text-sm font-medium text-gray-600">
+                CHECK-OUT
+              </label>
               <input
+                id="checkOut"
                 type="date"
                 value={checkOut}
                 min={checkIn}
-                onChange={(e) => setCheckOut(e.target.value)}
+                onChange={e => setCheckOut(e.target.value)}
                 className="w-full border border-gray-300 px-3 py-2 rounded-md text-gray-900"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-600">ROOMS & GUESTS</label>
+              <label htmlFor="roomsGuests" className="block text-sm font-medium text-gray-600">
+                ROOMS & GUESTS
+              </label>
               <input
+                id="roomsGuests"
                 type="text"
                 value={`${rooms} Room, ${guests} Guests`}
                 readOnly
@@ -78,13 +91,13 @@ export default function HotelPage() {
           </div>
 
           {/* Filters */}
-          <div className="flex flex-wrap gap-3 ">
-            {['Business', 'Couples', 'Families', 'Friends', 'Solo'].map((f) => (
+          <div className="flex flex-wrap gap-3">
+            {(['Business', 'Couples', 'Families', 'Friends', 'Solo'] as FilterOption[]).map(f => (
               <button
                 type="button"
                 key={f}
                 onClick={() => toggleFilter(f)}
-                className={`px-4 py-2 rounded-full border ${
+                className={`px-4 py-2 rounded-full border transition ${
                   filters.includes(f)
                     ? 'bg-blue-500 text-white border-blue-500 hover:bg-blue-600'
                     : 'bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-200'
@@ -107,24 +120,28 @@ export default function HotelPage() {
         </form>
       </div>
 
-      {/* BELOW THE HERO - Featured Hotels */}
+      {/* Featured Hotels */}
       <main className="py-16">
         <div className="max-w-6xl mx-auto px-4 space-y-12">
-          <h2 className="text-3xl font-bold text-center text-blue-200">Featured Hotels</h2>
+          <h2 className="text-3xl font-bold text-center text-blue-600">
+            Featured Hotels
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {[1, 2, 3].map((i) => (
+            {[1, 2, 3].map(i => (
               <div
                 key={i}
                 className="bg-white rounded-lg shadow hover:shadow-md transition overflow-hidden"
               >
-                <img
+                <Image
                   src={`/images/hotel-${i}.jpg`}
                   alt={`Hotel ${i}`}
+                  width={600}
+                  height={300}
                   className="object-cover w-full h-48"
                 />
                 <div className="p-4">
                   <h3 className="text-lg font-semibold text-gray-800">Hotel {i}</h3>
-                  <p className="text-gray-600">Cox’s Bazar, Bangladesh</p>
+                  <p className="text-gray-600">Cox&apos;s Bazar, Bangladesh</p>
                   <p className="mt-2 text-blue-600 font-bold">$120 / night</p>
                 </div>
               </div>

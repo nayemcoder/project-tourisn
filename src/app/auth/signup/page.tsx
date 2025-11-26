@@ -1,10 +1,16 @@
-// src/app/auth/signup/page.tsx
 'use client';
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 const ROLES = ['traveler', 'local_guide', 'business_owner', 'admin'] as const;
+
+interface SignupPayload {
+  full_name: string;
+  email: string;
+  password: string;
+  role: typeof ROLES[number];
+}
 
 export default function SignUpPage() {
   const router = useRouter();
@@ -15,21 +21,18 @@ export default function SignUpPage() {
   const [loading, setLoading]   = useState(false);
   const [error, setError]       = useState<string | null>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
 
+    const payload: SignupPayload = { full_name: fullName, email, password, role };
+
     try {
       const res = await fetch('/api/auth/signup', {
-        method:  'POST',
+        method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({
-          full_name: fullName,
-          email,
-          password,
-          role,
-        }),
+        body: JSON.stringify(payload),
       });
 
       const json = await res.json();
@@ -40,10 +43,9 @@ export default function SignUpPage() {
         return;
       }
 
-      // ✅ Immediately redirect to sign-in
       router.push('/auth/signin');
-    } catch (err: any) {
-      setError(err.message ?? 'Unexpected error occurred');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Unexpected error occurred');
       setLoading(false);
     }
   };
@@ -51,7 +53,6 @@ export default function SignUpPage() {
   return (
     <div className="max-w-md mx-auto py-16 px-4">
       <h2 className="text-2xl font-semibold mb-6">Sign Up</h2>
-
       <form onSubmit={handleSubmit} className="space-y-4">
         <input
           type="text"
@@ -88,9 +89,7 @@ export default function SignUpPage() {
             </option>
           ))}
         </select>
-
         {error && <p className="text-red-600 text-sm">{error}</p>}
-
         <button
           type="submit"
           disabled={loading}

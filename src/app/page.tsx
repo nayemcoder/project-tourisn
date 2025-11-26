@@ -7,12 +7,14 @@ const TRIP_TYPES = [
   { id: 'oneway', label: 'One Way' },
   { id: 'roundtrip', label: 'Round Trip' },
   { id: 'multicity', label: 'Multi City' },
-];
+] as const;
+
+type TripType = typeof TRIP_TYPES[number]['id'];
 
 export default function HomePage() {
-  const [tripType, setTripType] = useState<'oneway' | 'roundtrip' | 'multicity'>('oneway');
+  const [tripType, setTripType] = useState<TripType>('oneway');
   const [from, setFrom] = useState('Dhaka (DAC)');
-  const [to, setTo] = useState("Cox's Bazar (CXB)");
+  const [to, setTo] = useState("Cox&apos;s Bazar (CXB)");
   const [departDate, setDepartDate] = useState('2025-09-10');
   const [returnDate, setReturnDate] = useState('2025-09-15');
   const [travelers, setTravelers] = useState(1);
@@ -20,7 +22,7 @@ export default function HomePage() {
 
   const today = new Date().toISOString().split('T')[0];
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log({
       tripType,
@@ -43,7 +45,7 @@ export default function HomePage() {
         >
           {/* Trip Type */}
           <div className="flex space-x-2">
-            {TRIP_TYPES.map((opt) => (
+            {TRIP_TYPES.map(opt => (
               <label
                 key={opt.id}
                 className={`flex-1 text-center py-2 rounded font-medium cursor-pointer ${
@@ -57,7 +59,7 @@ export default function HomePage() {
                   name="tripType"
                   value={opt.id}
                   checked={tripType === opt.id}
-                  onChange={() => setTripType(opt.id as any)}
+                  onChange={() => setTripType(opt.id)}
                   className="hidden"
                 />
                 {opt.label}
@@ -94,7 +96,7 @@ export default function HomePage() {
             <SelectGroup
               label="Traveler"
               value={String(travelers)}
-              onChange={(v) => setTravelers(Number(v))}
+              onChange={v => setTravelers(Number(v))}
               options={Array.from({ length: 5 }, (_, i) => ({
                 value: String(i + 1),
                 label: `${i + 1} ${i === 0 ? 'Traveler' : 'Travelers'}`,
@@ -127,32 +129,22 @@ export default function HomePage() {
           <h2 className="text-3xl font-bold text-center text-blue-100">
             Why Choose Tourisn?
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6" >
-            <div className='bg-blue-200 rounded-lg shadow-lg'>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <FeatureCard
               title="Easy Booking"
               description="Find & book flights, hotels, tours, visas—all in one place."
               href="/tours"
             />
-
-            </div>
-           <div className='bg-blue-200 rounded-lg shadow-lg'>
-           <FeatureCard
+            <FeatureCard
               title="Become a Guide"
               description="Share your expertise & earn by hosting tours."
               href="/auth/signup?role=local_guide"
             />
-           </div>
-
-           <div className='bg-blue-200 rounded-lg shadow-lg'>
-           <FeatureCard
+            <FeatureCard
               title="Grow Your Business"
               description="Manage listings, track bookings, boost revenue."
               href="/auth/signup?role=business_owner"
             />
-           </div>
-           
-           
           </div>
         </div>
       </main>
@@ -172,11 +164,14 @@ function InputGroup({
 }) {
   return (
     <div>
-      <label className="block mb-1 font-medium text-gray-700">{label}</label>
+      <label htmlFor={label} className="block mb-1 font-medium text-gray-700">
+        {label}
+      </label>
       <input
+        id={label}
         type="text"
         value={value}
-        onChange={(e) => onChange(e.target.value)}
+        onChange={e => onChange(e.target.value)}
         className="w-full border border-gray-300 px-3 py-2 rounded-md text-gray-900 placeholder-gray-500"
       />
     </div>
@@ -196,13 +191,16 @@ function DateGroup({
 }) {
   return (
     <div>
-      <label className="block mb-1 font-medium text-gray-700">{label} Date</label>
+      <label htmlFor={label} className="block mb-1 font-medium text-gray-700">
+        {label} Date
+      </label>
       <input
+        id={label}
         type="date"
         value={value}
         min={min}
-        onChange={(e) => onChange(e.target.value)}
-        className="w-full border border-gray-300 px-3 py-2 rounded-md text-gray-900 placeholder-gray-500"
+        onChange={e => onChange(e.target.value)}
+        className="w-full border border-gray-300 px-3 py-2 rounded-md text-gray-900"
       />
     </div>
   );
@@ -221,13 +219,16 @@ function SelectGroup({
 }) {
   return (
     <div>
-      <label className="block mb-1 font-medium text-gray-700">{label}</label>
+      <label htmlFor={label} className="block mb-1 font-medium text-gray-700">
+        {label}
+      </label>
       <select
+        id={label}
         value={value}
-        onChange={(e) => onChange(e.target.value)}
+        onChange={e => onChange(e.target.value)}
         className="w-full border border-gray-300 px-3 py-2 rounded-md text-gray-900"
       >
-        {options.map((opt) => (
+        {options.map(opt => (
           <option key={opt.value} value={opt.value}>
             {opt.label}
           </option>
@@ -249,7 +250,7 @@ function FeatureCard({
   return (
     <Link
       href={href}
-      className="block p-6 bg-white rounded-lg shadow hover:shadow-md transition"
+      className="block p-6 bg-blue-200 rounded-lg shadow hover:shadow-md transition"
     >
       <h3 className="text-xl font-semibold mb-2 text-gray-800">{title}</h3>
       <p className="text-gray-600">{description}</p>
